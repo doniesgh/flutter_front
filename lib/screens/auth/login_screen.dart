@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo/components/text_field.dart';
@@ -8,21 +7,17 @@ import 'package:http/http.dart' as http;
 import 'package:todo/screens/home_screen.dart';
 import 'package:todo/utils/toast.dart';
 
-// ignore: must_be_immutable
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
+  const LoginScreen({Key? key}) : super(key: key);
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
-
   TextEditingController passwordController = TextEditingController();
-
   late SharedPreferences prefs;
-
+  String? errorMessage;
   @override
   void initState() {
     super.initState();
@@ -33,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
     prefs = await SharedPreferences.getInstance();
   }
 
-  Future<dynamic> login() async {
+  Future<void> login() async {
     try {
       if (emailController.text.isNotEmpty &&
           passwordController.text.isNotEmpty) {
@@ -45,80 +40,99 @@ class _LoginScreenState extends State<LoginScreen> {
         Utils.showToast("Logging in...");
 
         var response = await http.post(
-          Uri.parse("http://172.28.224.1:3001/login"),
+          Uri.parse("http://10.0.2.2:4000/api/user/login"),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(loginBody),
         );
 
         if (response.statusCode == 200) {
-          var myToken = jsonDecode(response.body)["token"];
+          var responseData = jsonDecode(response.body);
+          var myToken = responseData["token"];
           Utils.showToast("Logged in successfully");
           prefs.setString("token", myToken);
           Navigator.pushReplacement(
-              // ignore: use_build_context_synchronously
-              context,
-              MaterialPageRoute(
-                  builder: (context) => HomeScreen(
-                        token: myToken,
-                      )));
-        } else {}
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(token: myToken),
+            ),
+          );
+        } else {
+          var errorResponse = jsonDecode(response.body);
+          Utils.showToast("Login failed: ${errorResponse['error']}");
+          setState(() {
+            errorMessage = errorResponse['error'];
+          });
+        }
       } else {
-        return "Please fill all the fields";
+        Utils.showToast("Please fill all the fields");
       }
     } catch (e) {
-      return e;
+      Utils.showToast("Error: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Login',
-              style: TextStyle(color: Colors.white, fontSize: 24)),
-          backgroundColor: Colors.black,
-          toolbarHeight: 60,
-        ),
-        body: Column(
-          children: [
-            const Spacer(),
-            TextInput(
-              controller: emailController,
-              label: "Email",
-            ),
-            TextInput(
-              controller: passwordController,
-              label: "Password",
-              isPass: true,
-            ),
-            ElevatedButton(
-              onPressed: login,
-              child: const Text('Login'),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Don't have an account?"),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: 100.0),
+                child: Image.asset(
+                  'assets/tu.png',
+                  width: 220,
+                  height: 150,
+                ),
+              ),
+              const SizedBox(height: 100),
+              TextInput(
+                controller: emailController,
+                label: "Email",
+              ),
+              TextInput(
+                controller: passwordController,
+                label: "Password",
+                isPass: true,
+              ),
+              ElevatedButton(
+                onPressed: login,
+                child: const Text('Login'),
+              ),
+              if (errorMessage != null)
+                Text(
+                  errorMessage!,
+                  style: TextStyle(color: Colors.red),
+                ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account?"),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const RegisterScreen()));
-                  },
-                  child: Text(
-                    ' Register',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
+                          builder: (context) => const RegisterScreen(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      ' Register',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const Spacer(),
-          ],
-        ));
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

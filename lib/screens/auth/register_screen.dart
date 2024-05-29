@@ -29,7 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       };
 
       var response = await http.post(
-        Uri.parse('http://172.28.224.1:3001/register'),
+        Uri.parse('http://10.0.2.2:4000/register'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(regBody),
       );

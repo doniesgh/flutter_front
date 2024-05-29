@@ -25,7 +25,7 @@ class TextInput extends StatelessWidget {
       child: TextField(
         decoration: InputDecoration(
           border: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.deepPurple),
+            borderSide: const BorderSide(color: Colors.red),
             borderRadius: BorderRadius.circular(10),
           ),
           hintText: label,

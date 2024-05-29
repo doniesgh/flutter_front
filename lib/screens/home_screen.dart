@@ -1,10 +1,15 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:todo/components/text_field.dart';
 import 'package:todo/models/todo_model.dart';
+import 'package:todo/screens/auth/register_screen.dart';
+import 'package:todo/screens/pages/alerte.dart';
+import 'package:todo/screens/pages/equipement.dart';
+import 'package:todo/screens/pages/main_home.dart';
+import 'package:todo/screens/pages/profile.dart';
 import 'package:todo/utils/toast.dart';
 import 'package:http/http.dart' as http;
 
@@ -21,40 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
   late final userId;
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  late List<Todo> _todoList = [];
-
   @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
-  }
-
-  getTodoList() async {
-    try {
-      var body = {
-        "userId": userId,
-      };
-
-      var response =
-          await http.post(Uri.parse("http://172.28.224.1:3001/getTodo"),
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: jsonEncode(body));
-
-      if (response.statusCode == 200) {
-        _todoList = (jsonDecode(response.body)['data'] as List)
-            .map((e) => Todo.fromJson(e))
-            .toList();
-
-        setState(() {});
-      } else {
-        Utils.showToast("Failed to get todos, ${response.body} ");
-      }
-    } catch (e) {
-      print(e);
-    }
   }
 
   @override
@@ -63,109 +39,254 @@ class _HomeScreenState extends State<HomeScreen> {
     Map<String, dynamic> jwtToken = JwtDecoder.decode(widget.token);
     userId = jwtToken["_id"];
     email = jwtToken["email"];
-    getTodoList();
-  }
-
-  Future<dynamic> addTodo(title, description) async {
-    try {
-      if (title.isNotEmpty && description.isNotEmpty) {
-        var body = {
-          "userId": userId,
-          "title": title,
-          "description": description,
-        };
-
-        Utils.showToast(userId.toString());
-
-        var response = await http.post(
-            Uri.parse("http://172.28.224.1:3001/createTodo"),
-            headers: {"Content-Type": "application/json"},
-            body: jsonEncode(body));
-
-        if (response.statusCode == 200) {
-          Utils.showToast("Todo added successfully");
-        } else {
-          Utils.showToast("Failed to add todo");
-        }
-      } else {
-        Utils.showToast("Please fill all fields");
-      }
-    } catch (e) {
-      return e;
-    }
-  }
-
-  addDialog() {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('TODO'),
-            content: Column(mainAxisSize: MainAxisSize.min, children: [
-              TextInput(
-                controller: _titleController,
-                label: "Title",
-                h_padding: 0.01,
-              ),
-              TextInput(
-                controller: _descriptionController,
-                label: "Description",
-                h_padding: 0.01,
-              )
-            ]),
-            actions: <Widget>[
-              ElevatedButton(
-                child: const Text("Cancel"),
-                onPressed: () => Navigator.pop(context),
-              ),
-              ElevatedButton(
-                  child: const Text('Add'),
-                  onPressed: () {
-                    addTodo(_titleController.text, _descriptionController.text);
-                    _titleController.clear();
-                    _descriptionController.clear();
-                    Navigator.pop(this.context);
-                    setState(() async {
-                      await getTodoList();
-                    });
-                  }),
-            ],
-          );
-        });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Home',
-              style: TextStyle(color: Colors.white, fontSize: 24)),
-          backgroundColor: Colors.black,
-          toolbarHeight: 60,
-        ),
-        body: ListView.builder(
-          itemCount: _todoList.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              leading: Text((index + 1).toString()),
-              title: Text(_todoList[index].title),
-              subtitle: Text(_todoList[index].description),
-              trailing: IconButton(
-                icon: const Icon(
-                  Icons.cancel_rounded,
-                  color: Colors.red,
-                ),
+      appBar: AppBar(
+        title: const Text('Home',
+            style: TextStyle(color: Colors.white, fontSize: 24)),
+        backgroundColor: Color.fromRGBO(209, 77, 90, 1),
+        toolbarHeight: 60,
+      ),
+      drawer: Drawer(
+          child: ListView(
+        children: [
+          ListTile(
+            title: const Text('Phone Tickets'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FieldTicket()),
+              );
+            },
+          ),
+          ListTile(
+              title: const Text('Field Tickets'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FieldTicket()),
+                );
+              }),
+          ListTile(
+            title: const Text('Logout'),
+            onTap: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs
+                  .remove('token'); // Clear the token from SharedPreferences
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => RegisterScreen()),
+              );
+            },
+          )
+        ],
+      )),
+      body: Column(
+        children: [
+          const SizedBox(height: 100), // space between AppBar and first row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
                 onPressed: () {
-                  Utils.showToast("Delete functionality not implemented yet");
+                  // Action for button
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Color.fromARGB(255, 255, 118, 118), // background color
+                  minimumSize: Size(140, 120), // width and height
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), // border radius
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.phone,
+                        color: Colors.white, size: 40), // Icon added here
+                    SizedBox(
+                        height:
+                            15), // Adjust the spacing between the icon and the label
+                    Text(
+                      'Phone Tickets',
+                      style: TextStyle(color: Colors.white), // text color
+                    ),
+                  ],
+                ),
               ),
-            );
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-            onPressed: addDialog,
-            child: const Icon(
-              Icons.add_rounded,
-            )));
+              const SizedBox(width: 20), // space between buttons
+              ElevatedButton(
+                onPressed: () {
+                  // Action for button
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Color.fromARGB(255, 255, 118, 118), // background color
+                  minimumSize: Size(140, 120), // width and height
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), // border radius
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.map,
+                        color: Colors.white, size: 40), // Icon added here
+                    SizedBox(
+                        height:
+                            15), // Adjust the spacing between the icon and the label
+                    Text(
+                      'Fields Tickets',
+                      style: TextStyle(color: Colors.white), // text color
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EquipementScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Color.fromARGB(255, 255, 118, 118), // background color
+                  minimumSize: Size(140, 120), // width and height
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), // border radius
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.list,
+                        color: Colors.white, size: 40), // Icon added here
+                    SizedBox(
+                        height:
+                            15), // Adjust the spacing between the icon and the label
+                    Text(
+                      'Equipements',
+                      style: TextStyle(color: Colors.white), // text color
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 20), // space between buttons
+              ElevatedButton(
+                onPressed: () {
+                  // Action for button
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Color.fromARGB(255, 255, 118, 118), // background color
+                  minimumSize: Size(140, 120), // width and height
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), // border radius
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.history,
+                        color: Colors.white, size: 40), // Icon added here
+                    SizedBox(
+                        height:
+                            15), // Adjust the spacing between the icon and the label
+                    Text(
+                      'History',
+                      style: TextStyle(color: Colors.white), // text color
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AlerteScreen(token: widget.token),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Color.fromARGB(255, 255, 118, 118), // background color
+                  minimumSize: Size(140, 120), // width and height
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), // border radius
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.warning,
+                        color: Colors.white, size: 40), // Icon added here
+                    SizedBox(
+                        height:
+                            15), // Adjust the spacing between the icon and the label
+                    Text(
+                      'Warnings',
+                      style: TextStyle(color: Colors.white), // text color
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 20), // space between buttons
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileScreen(
+                          token: widget.token,
+                          email: email,
+                        ),
+                      ));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      Color.fromARGB(255, 255, 118, 118), // background color
+                  minimumSize: Size(140, 120), // width and height
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), // border radius
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.person, color: Colors.white, size: 40),
+                    SizedBox(height: 15),
+                    Text(
+                      'Profile',
+                      style: TextStyle(color: Colors.white), // text color
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
