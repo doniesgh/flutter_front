@@ -48,12 +48,17 @@ class _LoginScreenState extends State<LoginScreen> {
         if (response.statusCode == 200) {
           var responseData = jsonDecode(response.body);
           var myToken = responseData["token"];
+          var email = responseData["email"]; // Extract the email
           Utils.showToast("Logged in successfully");
+          Utils.showToast(email);
           prefs.setString("token", myToken);
+          prefs.setString("email", email);
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => HomeScreen(token: myToken),
+              builder: (context) =>
+              HomeScreen(token: myToken, email: email), 
             ),
           );
         } else {

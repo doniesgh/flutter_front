@@ -1,4 +1,4 @@
-/*import 'dart:convert';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,7 +14,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  /*String? firstname;
+  String? firstname;
   String? lastname;
   String? email;
   String? role;
@@ -22,13 +22,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading = true;
   bool isError = false;
   String errorMessage = '';
-  bool isPasswordVisible = false;*/
+  bool isPasswordVisible = false;
 
   @override
   void initState() {
     super.initState();
-    //fetchUserData();
-  }/*
+    fetchUserData();
+  }
 
   Future<void> fetchUserData() async {
     try {
@@ -60,24 +60,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isLoading = false;
       });
     }
-  }*/
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: const Text('Profile',
+            style: TextStyle(color: Colors.white, fontSize: 24)),
+        backgroundColor: Color.fromRGBO(209, 77, 90, 1),
+        toolbarHeight: 60,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Text(
-              'Email: ${widget.email}',
-              style: TextStyle(fontSize: 20),
-            ),
-            // _buildTextField('Prénom', firstname),
-            /*_buildTextField('Nom', lastname),
+            
+            _buildTextField('Prénom', firstname),
+            _buildTextField('Nom', lastname),
             _buildTextField('Adresse Email', email),
             _buildTextField('Role', role),
             _buildTextField(
@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               obscureText: !isPasswordVisible,
-            ),*/
+            ),
           ],
         ),
       ),
@@ -111,41 +111,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       readOnly: true,
       controller: TextEditingController(text: value ?? ''),
       obscureText: obscureText,
-    );
-  }
-}
-*/
-import 'package:flutter/material.dart';
-class ProfileScreen extends StatefulWidget {
-  final String token;
-  final String? email; 
-
-  const ProfileScreen({Key? key, required this.token, this.email})
-      : super(key: key);
-
-  @override
-  _ProfileScreenState createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Email: ${widget.email ?? 'N/A'}', // Use 'N/A' if email is null
-              style: TextStyle(fontSize: 20),
-            ),
-            // Other widgets and functionalities can be added here
-          ],
-        ),
-      ),
     );
   }
 }

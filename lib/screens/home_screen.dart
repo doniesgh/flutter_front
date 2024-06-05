@@ -8,21 +8,26 @@ import 'package:todo/models/todo_model.dart';
 import 'package:todo/screens/auth/register_screen.dart';
 import 'package:todo/screens/pages/alerte.dart';
 import 'package:todo/screens/pages/equipement.dart';
+import 'package:todo/screens/pages/historique.dart';
 import 'package:todo/screens/pages/main_home.dart';
+import 'package:todo/screens/pages/notification.dart';
 import 'package:todo/screens/pages/profile.dart';
+import 'package:todo/screens/tickets/phoneTicket.dart';
 import 'package:todo/utils/toast.dart';
 import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   final String token;
-  const HomeScreen({super.key, required this.token});
+  final String email;
+  const HomeScreen({super.key, required this.token, required this.email});
+
+  // const HomeScreen({super.key, required this.token});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late final email;
   late final userId;
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -36,9 +41,54 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Map<String, dynamic> jwtToken = JwtDecoder.decode(widget.token);
-    userId = jwtToken["_id"];
-    email = jwtToken["email"];
+    print(widget.token);
+    print(widget.email);
+  }
+
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    // Add navigation logic here based on the index
+    switch (index) {
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NotificationScreen(token: widget.token),
+          ),
+        );
+        break;
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FieldTicket(),
+          ),
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PTicketScreen(token: widget.token),
+          ),
+        );
+        break;
+      case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfileScreen(
+              token: widget.token,
+              email: widget.email,
+            ),
+          ),
+        );
+        break;
+    }
   }
 
   @override
@@ -74,8 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
             title: const Text('Logout'),
             onTap: () async {
               SharedPreferences prefs = await SharedPreferences.getInstance();
-              await prefs
-                  .remove('token'); // Clear the token from SharedPreferences
+              await prefs.remove('token');
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => RegisterScreen()),
@@ -86,68 +135,66 @@ class _HomeScreenState extends State<HomeScreen> {
       )),
       body: Column(
         children: [
-          const SizedBox(height: 100), // space between AppBar and first row
+          const SizedBox(height: 100),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
                 onPressed: () {
-                  // Action for button
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PTicketScreen(
+                          token: widget.token,
+                          //email: email,
+                        ),
+                      ));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Color.fromARGB(255, 255, 118, 118), // background color
-                  minimumSize: Size(140, 120), // width and height
+                  backgroundColor: Color.fromARGB(255, 255, 118, 118),
+                  minimumSize: Size(140, 120),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // border radius
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.phone,
-                        color: Colors.white, size: 40), // Icon added here
-                    SizedBox(
-                        height:
-                            15), // Adjust the spacing between the icon and the label
+                    Icon(Icons.phone, color: Colors.white, size: 40),
+                    SizedBox(height: 15),
                     Text(
                       'Phone Tickets',
-                      style: TextStyle(color: Colors.white), // text color
+                      style: TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 20), // space between buttons
+              const SizedBox(width: 20),
               ElevatedButton(
                 onPressed: () {
                   // Action for button
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Color.fromARGB(255, 255, 118, 118), // background color
-                  minimumSize: Size(140, 120), // width and height
+                  backgroundColor: Color.fromARGB(255, 255, 118, 118),
+                  minimumSize: Size(140, 120),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // border radius
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.map,
-                        color: Colors.white, size: 40), // Icon added here
-                    SizedBox(
-                        height:
-                            15), // Adjust the spacing between the icon and the label
+                    Icon(Icons.map, color: Colors.white, size: 40),
+                    SizedBox(height: 15),
                     Text(
                       'Fields Tickets',
-                      style: TextStyle(color: Colors.white), // text color
+                      style: TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -162,59 +209,56 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Color.fromARGB(255, 255, 118, 118), // background color
-                  minimumSize: Size(140, 120), // width and height
+                  backgroundColor: Color.fromARGB(255, 255, 118, 118),
+                  minimumSize: Size(140, 120),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // border radius
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.list,
-                        color: Colors.white, size: 40), // Icon added here
-                    SizedBox(
-                        height:
-                            15), // Adjust the spacing between the icon and the label
+                    Icon(Icons.list, color: Colors.white, size: 40),
+                    SizedBox(height: 15),
                     Text(
                       'Equipements',
-                      style: TextStyle(color: Colors.white), // text color
+                      style: TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 20), // space between buttons
+              const SizedBox(width: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Action for button
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          HistoriqueScreen(token: widget.token),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Color.fromARGB(255, 255, 118, 118), // background color
-                  minimumSize: Size(140, 120), // width and height
+                  backgroundColor: Color.fromARGB(255, 255, 118, 118),
+                  minimumSize: Size(140, 120),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // border radius
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.history,
-                        color: Colors.white, size: 40), // Icon added here
-                    SizedBox(
-                        height:
-                            15), // Adjust the spacing between the icon and the label
+                    Icon(Icons.history, color: Colors.white, size: 40),
+                    SizedBox(height: 15),
                     Text(
                       'History',
-                      style: TextStyle(color: Colors.white), // text color
+                      style: TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -229,29 +273,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Color.fromARGB(255, 255, 118, 118), // background color
-                  minimumSize: Size(140, 120), // width and height
+                  backgroundColor: Color.fromARGB(255, 255, 118, 118),
+                  minimumSize: Size(140, 120),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // border radius
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.warning,
-                        color: Colors.white, size: 40), // Icon added here
-                    SizedBox(
-                        height:
-                            15), // Adjust the spacing between the icon and the label
+                    Icon(Icons.warning, color: Colors.white, size: 40),
+                    SizedBox(height: 15),
                     Text(
                       'Warnings',
-                      style: TextStyle(color: Colors.white), // text color
+                      style: TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 20), // space between buttons
+              const SizedBox(width: 20),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -259,16 +299,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       MaterialPageRoute(
                         builder: (context) => ProfileScreen(
                           token: widget.token,
-                          email: email,
+                          email: widget.email,
                         ),
                       ));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Color.fromARGB(255, 255, 118, 118), // background color
-                  minimumSize: Size(140, 120), // width and height
+                  backgroundColor: Color.fromARGB(255, 255, 118, 118),
+                  minimumSize: Size(140, 120),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // border radius
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 child: Column(
@@ -284,8 +323,35 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ],
+          )
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: 'Notifications',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Field Tickets',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.phone),
+            label: 'Phone Tickets',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Color.fromARGB(255, 255, 70, 104),
+        unselectedItemColor: Colors.black,
+        showUnselectedLabels: true,
+        unselectedLabelStyle: TextStyle(color: Colors.black),
+        backgroundColor: Color.fromRGBO(209, 77, 90, 1),
+        onTap: _onItemTapped,
       ),
     );
   }

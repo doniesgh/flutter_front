@@ -1,19 +1,18 @@
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:jiffy/jiffy.dart';
 
-class AlerteScreen extends StatefulWidget {
+class NotificationScreen extends StatefulWidget {
   final String token;
 
-  AlerteScreen({required this.token});
+  NotificationScreen({required this.token});
 
   @override
-  _AlerteScreenState createState() => _AlerteScreenState();
+  _NotificationScreenState createState() => _NotificationScreenState();
 }
 
-class _AlerteScreenState extends State<AlerteScreen> {
+class _NotificationScreenState extends State<NotificationScreen> {
   List<dynamic> alerts = [];
   bool isLoading = true;
 
@@ -29,23 +28,24 @@ class _AlerteScreenState extends State<AlerteScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:4000/api/alert/'),
+        Uri.parse('http://10.0.2.2:4000/api/notification/get'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        if (responseData != null) {
+        if (responseData != null && responseData['notifications'] != null) {
           setState(() {
-            alerts = responseData;
+            alerts = responseData['notifications'];
             isLoading = false;
           });
         } else {
-          throw Exception('Response data is null');
+          throw Exception(
+              'Response data is null or notifications key is missing');
         }
       } else {
-        throw Exception('Failed to load alertes: ${response.statusCode}');
+        throw Exception('Failed to load alerts: ${response.statusCode}');
       }
     } catch (error) {
       print('Error fetching alerts: $error');
@@ -55,12 +55,32 @@ class _AlerteScreenState extends State<AlerteScreen> {
     }
   }
 
+  Future<void> deleteAlert(String id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('http://10.0.2.2:4000/api/notification/delete/$id'),
+        headers: {
+          'Authorization': 'Bearer ${widget.token}',
+        },
+      );
+      if (response.statusCode == 200) {
+        setState(() {
+          alerts.removeWhere((alert) => alert['_id'] == id);
+        });
+      } else {
+        throw Exception('Failed to delete alert: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error deleting alert: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Alertes',
+          'Notifications',
           style: TextStyle(color: Colors.white, fontSize: 24),
         ),
         backgroundColor: Color.fromRGBO(209, 77, 90, 1),
@@ -75,14 +95,14 @@ class _AlerteScreenState extends State<AlerteScreen> {
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : alerts.isEmpty
-              ? Center(child: Text('No alerts found'))
+              ? Center(child: Text('No notification found'))
               : RefreshIndicator(
                   onRefresh: fetchAlertes,
                   child: ListView.builder(
                     itemCount: alerts.length,
                     itemBuilder: (context, index) {
                       final alert = alerts[index];
-                       final DateTime createdAt =
+                      final DateTime createdAt =
                           DateTime.parse(alert['createdAt']);
                       final String formattedDate =
                           Jiffy(createdAt.toIso8601String()).yMMMMEEEEdjm;
@@ -95,6 +115,12 @@ class _AlerteScreenState extends State<AlerteScreen> {
                           ),
                           title: Text(alert['message']),
                           subtitle: Text('Created At: $formattedDate'),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              deleteAlert(alert['_id']);
+                            },
+                          ),
                         ),
                       );
                     },

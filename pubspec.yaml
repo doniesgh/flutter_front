@@ -35,7 +35,11 @@ dependencies:
   http: ^1.2.1
   jwt_decoder: ^2.0.1
   shared_preferences: ^2.2.3
-
+  jiffy: ^5.0.0  # Ensure this is the latest version
+  google_fonts: 6.2.1 # You can check for the latest version on pub.dev
+  pdf: ^3.6.0
+  open_file: ^3.0.2  # Add this line
+  path_provider: ^2.0.2
 dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_test:
@@ -49,6 +53,15 @@ flutter:
 
   assets:
     - assets/tu.png
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+          weight: 500
+
+        # Add additional font weights/styles as needed
+
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -59,10 +72,6 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro
