@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:todo/components/text_field.dart';
-import 'package:todo/models/todo_model.dart';
+import 'package:todo/screens/FieldsTickets/FieldTickets.dart';
 import 'package:todo/screens/auth/register_screen.dart';
 import 'package:todo/screens/pages/alerte.dart';
 import 'package:todo/screens/pages/equipement.dart';
@@ -20,8 +20,6 @@ class HomeScreen extends StatefulWidget {
   final String token;
   final String email;
   const HomeScreen({super.key, required this.token, required this.email});
-
-  // const HomeScreen({super.key, required this.token});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -51,7 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    // Add navigation logic here based on the index
     switch (index) {
       case 0:
         Navigator.push(
@@ -172,7 +169,12 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(width: 20),
               ElevatedButton(
                 onPressed: () {
-                  // Action for button
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FieldTicketScreen(token : widget.token),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 255, 118, 118),

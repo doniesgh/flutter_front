@@ -27,7 +27,7 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:4000/api/ticketht/approved/all'),
+        Uri.parse('http://172.30.64.1:2000/api/ticketht/approved/all'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -66,7 +66,7 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.only(
-            top: 5.0), // Adding space between AppBar and body
+            top: 5.0),
         child: isLoading
             ? Center(child: CircularProgressIndicator())
             : historique.isEmpty

@@ -1,14 +1,9 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:todo/components/text_field.dart';
 import 'package:http/http.dart' as http;
 import 'package:todo/screens/auth/login_screen.dart';
 import 'package:todo/utils/toast.dart';
-
-// ignore: must_be_immutable
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -29,7 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       };
 
       var response = await http.post(
-        Uri.parse('http://10.0.2.2:4000/register'),
+        Uri.parse('http://172.30.64.1:2000/register'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(regBody),
       );

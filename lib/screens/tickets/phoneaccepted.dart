@@ -31,7 +31,7 @@ class _PhoneAcceptedScreenState extends State<PhoneAcceptedScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:4000/api/ticketht/assigned/phone'),
+        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/phone'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -86,7 +86,7 @@ class _PhoneAcceptedScreenState extends State<PhoneAcceptedScreen> {
     if (result == true) {
       try {
         final response = await http.put(
-          Uri.parse('http://10.0.2.2:4000/api/ticket/started/$ticketId'),
+          Uri.parse('http://172.30.64.1:2000/api/ticket/started/$ticketId'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({'status': 'ACCEPTED'}),
         );

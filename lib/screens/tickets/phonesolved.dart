@@ -28,7 +28,7 @@ class _PhoneSolvedScreenState extends State<PhoneSolvedScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:4000/api/ticketht/assigned/phone'),
+        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/phone'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -89,7 +89,7 @@ class _PhoneSolvedScreenState extends State<PhoneSolvedScreen> {
                       margin: EdgeInsets.all(10),
                       child: ListTile(
                         title: Text(tickets[index]['reference']),
-                          onTap: () {
+                        onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -98,13 +98,14 @@ class _PhoneSolvedScreenState extends State<PhoneSolvedScreen> {
                             ),
                           );
                         },
- subtitle: Column(
+                        subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(tickets[index]['status']),
                             Text(tickets[index]['service_station']),
                           ],
-                        ),                        trailing: ElevatedButton(
+                        ),
+                        trailing: ElevatedButton(
                           onPressed: () {
                             String ticketId = tickets[index]['_id'];
                           },

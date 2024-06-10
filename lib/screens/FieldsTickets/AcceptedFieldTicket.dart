@@ -4,18 +4,18 @@ import 'dart:convert';
 
 import 'package:todo/screens/tickets/ticketDetails.dart';
 
-class PhoneAssignedScreen extends StatefulWidget {
+class FieldAcceptedScreen extends StatefulWidget {
   final String token;
   final String? email;
 
-  const PhoneAssignedScreen({Key? key, required this.token, this.email})
+  const FieldAcceptedScreen({Key? key, required this.token, this.email})
       : super(key: key);
 
   @override
-  _PhoneAssignedScreenState createState() => _PhoneAssignedScreenState();
+  _FieldAcceptedScreenState createState() => _FieldAcceptedScreenState();
 }
 
-class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
+class _FieldAcceptedScreenState extends State<FieldAcceptedScreen> {
   bool isLoading = false;
   List<dynamic> tickets = [];
 
@@ -31,7 +31,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/phone'),
+        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/field'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -41,7 +41,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
         if (responseData != null) {
           setState(() {
             tickets = responseData
-                .where((ticket) => ticket['status'] == 'ASSIGNED')
+                .where((ticket) => ticket['status'] == 'ACCEPTED')
                 .toList();
             isLoading = false;
           });
@@ -64,7 +64,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Êtes-vous sûr de vouloir accepter ce ticket ?'),
+          title: Text('Êtes-vous sûr  de partir ?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -76,7 +76,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
               onPressed: () {
                 Navigator.of(context).pop(true);
               },
-              child: Text('Oui, accepter'),
+              child: Text('Oui, je vais partir'),
             ),
           ],
         );
@@ -86,9 +86,9 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
     if (result == true) {
       try {
         final response = await http.put(
-          Uri.parse('http://172.30.64.1:2000/api/ticket/accepted/$ticketId'),
+          Uri.parse('http://172.30.64.1:2000/api/ticket/departure/$ticketId'),
           headers: {'Content-Type': 'application/json'},
-          body: json.encode({'status': 'ACCEPTED'}),
+          body: json.encode({'status': 'LEFT'}),
         );
 
         if (response.statusCode == 200) {
@@ -96,7 +96,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Ticket accepté avec succès!'),
+                title: Text('Partis avec succès!'),
                 actions: [
                   TextButton(
                     onPressed: () {
@@ -114,7 +114,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Erreur lors de l'acceptation du ticket"),
+                title: Text("Erreur ticket"),
                 content: Text("Veuillez réessayer plus tard"),
                 actions: [
                   TextButton(
@@ -133,7 +133,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("Erreur lors de l'acceptation du ticket"),
+              title: Text("Erreur "),
               content: Text("Veuillez réessayer plus tard"),
               actions: [
                 TextButton(
@@ -155,7 +155,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Assigned',
+          'Accepted',
           style: TextStyle(color: Colors.white, fontSize: 24),
         ),
         backgroundColor: Color.fromRGBO(209, 77, 90, 1),
@@ -204,13 +204,13 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
                             handleAcceptTicket(tickets[index]['_id']);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 171, 4, 4),
+                            backgroundColor: Color.fromARGB(255, 255, 248, 35),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           child: Text(
-                            'Accept',
+                            'Depart',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),

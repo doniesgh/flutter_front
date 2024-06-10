@@ -58,7 +58,7 @@ class SimpleHelloDialog extends StatelessWidget {
       try {
         final solvingData = {'solution': solutionController.text};
         final response = await http.put(
-          Uri.parse('http://10.0.2.2:4000/api/ticket/solved/$ticketId'),
+          Uri.parse('http://172.30.64.1:2000/api/ticket/solved/$ticketId'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode(solvingData),
         );

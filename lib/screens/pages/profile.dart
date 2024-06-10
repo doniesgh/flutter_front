@@ -33,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> fetchUserData() async {
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:4000/api/user/email/${widget.email}'),
+        Uri.parse('http://172.30.64.1:2000/api/user/email/${widget.email}'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -43,7 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final responseData = json.decode(response.body);
         setState(() {
           firstname = responseData['firstname'] as String? ??
-              ''; // Use empty string if Null
+              '';
           lastname = responseData['lastname'] as String? ?? '';
           email = responseData['email'] as String? ?? '';
           role = responseData['role'] as String? ?? '';

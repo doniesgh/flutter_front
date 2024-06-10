@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
             seedColor: const Color.fromARGB(255, 185, 6, 6)),
         useMaterial3: true,
         textTheme: GoogleFonts
-            .poppinsTextTheme(), // Apply Poppins font to the entire app
+            .poppinsTextTheme(), 
       ),
       routes: {
         '/assignedphone': (context) => PhoneAssignedScreen(token: token!),
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
           : HomeScreen(
               token: token!,
               email: email!,
-            ), // Pass email to HomeScreen
+            ), 
     );
   }
 }

@@ -4,18 +4,18 @@ import 'dart:convert';
 
 import 'package:todo/screens/tickets/ticketDetails.dart';
 
-class PhoneAssignedScreen extends StatefulWidget {
+class FieldAssignedScreen extends StatefulWidget {
   final String token;
   final String? email;
 
-  const PhoneAssignedScreen({Key? key, required this.token, this.email})
+  const FieldAssignedScreen({Key? key, required this.token, this.email})
       : super(key: key);
 
   @override
-  _PhoneAssignedScreenState createState() => _PhoneAssignedScreenState();
+  _FieldAssignedScreenState createState() => _FieldAssignedScreenState();
 }
 
-class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
+class _FieldAssignedScreenState extends State<FieldAssignedScreen> {
   bool isLoading = false;
   List<dynamic> tickets = [];
 
@@ -31,7 +31,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/phone'),
+        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/field'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },

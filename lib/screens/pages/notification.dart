@@ -28,7 +28,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:4000/api/notification/get'),
+        Uri.parse('http://172.30.64.1:2000/api/notification/get'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -58,7 +58,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Future<void> deleteAlert(String id) async {
     try {
       final response = await http.delete(
-        Uri.parse('http://10.0.2.2:4000/api/notification/delete/$id'),
+        Uri.parse('http://172.30.64.1:2000/api/notification/delete/$id'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },

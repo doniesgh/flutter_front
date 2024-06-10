@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:todo/screens/FieldsTickets/qrCodeScreen.dart';
 import 'dart:convert';
 
 import 'package:todo/screens/tickets/ticketDetails.dart';
 
-class PhoneAssignedScreen extends StatefulWidget {
+class FieldArrivedScreen extends StatefulWidget {
   final String token;
   final String? email;
 
-  const PhoneAssignedScreen({Key? key, required this.token, this.email})
+  const FieldArrivedScreen({Key? key, required this.token, this.email})
       : super(key: key);
 
   @override
-  _PhoneAssignedScreenState createState() => _PhoneAssignedScreenState();
+  _FieldArrivedScreenState createState() => _FieldArrivedScreenState();
 }
 
-class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
+class _FieldArrivedScreenState extends State<FieldArrivedScreen> {
   bool isLoading = false;
   List<dynamic> tickets = [];
 
@@ -31,7 +32,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/phone'),
+        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/field'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -41,7 +42,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
         if (responseData != null) {
           setState(() {
             tickets = responseData
-                .where((ticket) => ticket['status'] == 'ASSIGNED')
+                .where((ticket) => ticket['status'] == 'ARRIVED')
                 .toList();
             isLoading = false;
           });
@@ -59,12 +60,13 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
     }
   }
 
-  Future<void> handleAcceptTicket(String ticketId) async {
+  ///////////////////////////////// START//////////////////////////////////
+  Future<void> handleStartTicket(BuildContext context, String ticketId) async {
     final result = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Êtes-vous sûr de vouloir accepter ce ticket ?'),
+          title: Text('Êtes-vous sûr de vouloir commencer ce ticket ?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -76,7 +78,100 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
               onPressed: () {
                 Navigator.of(context).pop(true);
               },
-              child: Text('Oui, accepter'),
+              child: Text('Oui, commencer'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true) {
+      final qrResult = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => QrScannerScreen()),
+      );
+
+      if (qrResult != null) {
+        try {
+          final response = await http.put(
+            Uri.parse('http://172.30.64.1:2000/api/ticket/startedField/$ticketId'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'status': 'LOADING',
+              'codeqr': qrResult,
+            }),
+          );
+
+          if (response.statusCode == 200) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Ticket commencé avec succès!'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        fetchAssignedTickets();
+                      },
+                      child: Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          } else {
+            showErrorDialog(context);
+          }
+        } catch (error) {
+          showErrorDialog(context);
+        }
+      } else {
+        showErrorDialog(context, message: "Scan de QR code annulé.");
+      }
+    }
+  }
+
+  void showErrorDialog(BuildContext context,
+      {String message = "Veuillez réessayer plus tard"}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Erreur"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /*
+ Future<void> handleStartTicket(String ticketId) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Êtes-vous sûr de vouloir commencer ce ticket ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text('Oui, commencer'),
             ),
           ],
         );
@@ -86,17 +181,16 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
     if (result == true) {
       try {
         final response = await http.put(
-          Uri.parse('http://172.30.64.1:2000/api/ticket/accepted/$ticketId'),
+          Uri.parse('http://172.30.64.1:2000/api/ticket/started/$ticketId'),
           headers: {'Content-Type': 'application/json'},
-          body: json.encode({'status': 'ACCEPTED'}),
+          body: json.encode({'status': 'LOADING'}),
         );
-
         if (response.statusCode == 200) {
           showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Ticket accepté avec succès!'),
+                title: Text('Ticket commencé avec succès!'),
                 actions: [
                   TextButton(
                     onPressed: () {
@@ -114,7 +208,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Erreur lors de l'acceptation du ticket"),
+                title: Text("Erreur "),
                 content: Text("Veuillez réessayer plus tard"),
                 actions: [
                   TextButton(
@@ -133,7 +227,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("Erreur lors de l'acceptation du ticket"),
+              title: Text("Erreur "),
               content: Text("Veuillez réessayer plus tard"),
               actions: [
                 TextButton(
@@ -148,14 +242,13 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
         );
       }
     }
-  }
-
+  }*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Assigned',
+          'Arrived',
           style: TextStyle(color: Colors.white, fontSize: 24),
         ),
         backgroundColor: Color.fromRGBO(209, 77, 90, 1),
@@ -172,7 +265,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
           : tickets.isEmpty
               ? Center(
                   child: Text(
-                    'No assigned tickets found.',
+                    'No arrived tickets found.',
                     style: TextStyle(fontSize: 20),
                   ),
                 )
@@ -201,16 +294,17 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
                         ),
                         trailing: ElevatedButton(
                           onPressed: () {
-                            handleAcceptTicket(tickets[index]['_id']);
+                            //handleStartTicket(tickets[index]['_id']);
+                            handleStartTicket(context, tickets[index]['_id']);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 171, 4, 4),
+                            backgroundColor: Color.fromARGB(255, 51, 197, 66),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           child: Text(
-                            'Accept',
+                            'Start',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),

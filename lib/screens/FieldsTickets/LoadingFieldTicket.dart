@@ -4,18 +4,18 @@ import 'dart:convert';
 
 import 'package:todo/screens/tickets/ticketDetails.dart';
 
-class PhoneAssignedScreen extends StatefulWidget {
+class FieldLoadingScreen extends StatefulWidget {
   final String token;
   final String? email;
 
-  const PhoneAssignedScreen({Key? key, required this.token, this.email})
+  const FieldLoadingScreen({Key? key, required this.token, this.email})
       : super(key: key);
 
   @override
-  _PhoneAssignedScreenState createState() => _PhoneAssignedScreenState();
+  _FieldLoadingScreenState createState() => _FieldLoadingScreenState();
 }
 
-class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
+class _FieldLoadingScreenState extends State<FieldLoadingScreen> {
   bool isLoading = false;
   List<dynamic> tickets = [];
 
@@ -31,7 +31,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/phone'),
+        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/field'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -41,7 +41,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
         if (responseData != null) {
           setState(() {
             tickets = responseData
-                .where((ticket) => ticket['status'] == 'ASSIGNED')
+                .where((ticket) => ticket['status'] == 'LOADING')
                 .toList();
             isLoading = false;
           });
@@ -59,103 +59,12 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
     }
   }
 
-  Future<void> handleAcceptTicket(String ticketId) async {
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Êtes-vous sûr de vouloir accepter ce ticket ?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: Text('Annuler'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-              child: Text('Oui, accepter'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (result == true) {
-      try {
-        final response = await http.put(
-          Uri.parse('http://172.30.64.1:2000/api/ticket/accepted/$ticketId'),
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode({'status': 'ACCEPTED'}),
-        );
-
-        if (response.statusCode == 200) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Ticket accepté avec succès!'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      fetchAssignedTickets();
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              );
-            },
-          );
-        } else {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text("Erreur lors de l'acceptation du ticket"),
-                content: Text("Veuillez réessayer plus tard"),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('OK'),
-                  ),
-                ],
-              );
-            },
-          );
-        }
-      } catch (error) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Erreur lors de l'acceptation du ticket"),
-              content: Text("Veuillez réessayer plus tard"),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Assigned',
+          'Loading...',
           style: TextStyle(color: Colors.white, fontSize: 24),
         ),
         backgroundColor: Color.fromRGBO(209, 77, 90, 1),
@@ -172,7 +81,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
           : tickets.isEmpty
               ? Center(
                   child: Text(
-                    'No assigned tickets found.',
+                    'No loading tickets found.',
                     style: TextStyle(fontSize: 20),
                   ),
                 )
@@ -201,7 +110,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
                         ),
                         trailing: ElevatedButton(
                           onPressed: () {
-                            handleAcceptTicket(tickets[index]['_id']);
+                            //handleAcceptTicket(tickets[index]['_id']);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 171, 4, 4),
@@ -210,7 +119,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
                             ),
                           ),
                           child: Text(
-                            'Accept',
+                            'Solved',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),

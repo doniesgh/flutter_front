@@ -28,18 +28,19 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  cupertino_icons: ^1.0.6
   flutter:
     sdk: flutter
+  cupertino_icons: ^1.0.6
   fluttertoast: ^8.2.5
   http: ^1.2.1
   jwt_decoder: ^2.0.1
   shared_preferences: ^2.2.3
   jiffy: ^5.0.0  # Ensure this is the latest version
-  google_fonts: 6.2.1 # You can check for the latest version on pub.dev
+  google_fonts: ^6.2.1 # You can check for the latest version on pub.dev
   pdf: ^3.6.0
-  open_file: ^3.0.2  # Add this line
+  open_file: ^3.0.2
   path_provider: ^2.0.2
+  qr_code_scanner: ^1.0.1
 dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_test:

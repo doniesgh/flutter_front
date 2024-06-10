@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -29,7 +28,7 @@ class _AlerteScreenState extends State<AlerteScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:4000/api/alert/'),
+        Uri.parse('http://172.30.64.1:2000/api/alert/'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },

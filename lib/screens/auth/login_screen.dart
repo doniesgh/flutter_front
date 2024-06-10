@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Utils.showToast("Logging in...");
 
         var response = await http.post(
-          Uri.parse("http://10.0.2.2:4000/api/user/login"),
+          Uri.parse("http://172.30.64.1:2000/api/user/login"),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(loginBody),
         );
@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (response.statusCode == 200) {
           var responseData = jsonDecode(response.body);
           var myToken = responseData["token"];
-          var email = responseData["email"]; // Extract the email
+          var email = responseData["email"]; 
           Utils.showToast("Logged in successfully");
           Utils.showToast(email);
           prefs.setString("token", myToken);
