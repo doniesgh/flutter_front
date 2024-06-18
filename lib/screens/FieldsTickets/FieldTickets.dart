@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:todo/screens/FieldsTickets/AcceptedFieldTicket.dart';
 import 'package:todo/screens/FieldsTickets/ArrivedFieldTicket.dart';
-import 'dart:convert';
-
 import 'package:todo/screens/FieldsTickets/AssignedFieldTicket.dart';
 import 'package:todo/screens/FieldsTickets/EnRouteFieldTicket.dart';
 import 'package:todo/screens/FieldsTickets/LoadingFieldTicket.dart';

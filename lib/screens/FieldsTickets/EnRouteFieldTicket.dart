@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:todo/screens/tickets/ticketDetails.dart';
 
 class FieldEnRouteScreen extends StatefulWidget {
@@ -24,14 +24,15 @@ class _FieldEnRouteScreenState extends State<FieldEnRouteScreen> {
     super.initState();
     fetchAssignedTickets();
   }
-
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   Future<void> fetchAssignedTickets() async {
     setState(() {
       isLoading = true;
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/field'),
+        Uri.parse('$url:$port/api/ticketht/assigned/field'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -86,7 +87,7 @@ class _FieldEnRouteScreenState extends State<FieldEnRouteScreen> {
     if (result == true) {
       try {
         final response = await http.put(
-          Uri.parse('http://172.30.64.1:2000/api/ticket/arrived/$ticketId'),
+          Uri.parse('$url:$port/api/ticket/arrived/$ticketId'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({'status': 'ARRIVED'}),
         );

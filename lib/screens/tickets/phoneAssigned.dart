@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:todo/screens/tickets/ticketDetails.dart';
 
 class PhoneAssignedScreen extends StatefulWidget {
@@ -18,7 +18,8 @@ class PhoneAssignedScreen extends StatefulWidget {
 class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
   bool isLoading = false;
   List<dynamic> tickets = [];
-
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   @override
   void initState() {
     super.initState();
@@ -31,7 +32,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/phone'),
+        Uri.parse('$url:$port/api/ticketht/assigned/phone'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -86,7 +87,7 @@ class _PhoneAssignedScreenState extends State<PhoneAssignedScreen> {
     if (result == true) {
       try {
         final response = await http.put(
-          Uri.parse('http://172.30.64.1:2000/api/ticket/accepted/$ticketId'),
+          Uri.parse('$url:$port/api/ticket/accepted/$ticketId'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({'status': 'ACCEPTED'}),
         );

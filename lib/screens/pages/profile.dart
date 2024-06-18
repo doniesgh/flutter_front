@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String token;
@@ -23,7 +24,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isError = false;
   String errorMessage = '';
   bool isPasswordVisible = false;
-
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   @override
   void initState() {
     super.initState();
@@ -33,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> fetchUserData() async {
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/user/email/${widget.email}'),
+        Uri.parse('$url:$port/api/user/email/${widget.email}'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },

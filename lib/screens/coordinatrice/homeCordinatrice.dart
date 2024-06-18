@@ -2,25 +2,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:todo/screens/FieldsTickets/FieldTickets.dart';
 import 'package:todo/screens/auth/register_screen.dart';
-import 'package:todo/screens/pages/alerte.dart';
-import 'package:todo/screens/pages/equipement.dart';
+import 'package:todo/screens/coordinatrice/alerteCoordinatrice.dart';
+import 'package:todo/screens/coordinatrice/clientManagement.dart';
 import 'package:todo/screens/pages/historique.dart';
 import 'package:todo/screens/pages/main_home.dart';
 import 'package:todo/screens/pages/notification.dart';
 import 'package:todo/screens/pages/profile.dart';
 import 'package:todo/screens/tickets/phoneTicket.dart';
 
-
-class HomeScreen extends StatefulWidget {
+class HomeCordinatrice extends StatefulWidget {
   final String token;
   final String email;
-  const HomeScreen({super.key, required this.token, required this.email});
+  const HomeCordinatrice({super.key, required this.token, required this.email});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeCordinatrice> createState() => _HomeCordinatriceScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeCordinatriceScreenState extends State<HomeCordinatrice> {
   late final userId;
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -87,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home',
+        title: const Text('Home Coordinatrice',
             style: TextStyle(color: Colors.white, fontSize: 24)),
         backgroundColor: Color.fromRGBO(209, 77, 90, 1),
         toolbarHeight: 60,
@@ -127,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
       )),
       body: Column(
         children: [
-          const SizedBox(height: 100),
+          const SizedBox(height: 60),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -167,7 +166,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => FieldTicketScreen(token : widget.token),
+                      builder: (context) =>
+                          FieldTicketScreen(token: widget.token),
                     ),
                   );
                 },
@@ -201,7 +201,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EquipementScreen(),
+                      builder: (context) => Clientmanagement(
+                          token: widget.token, email: widget.email),
                     ),
                   );
                 },
@@ -215,10 +216,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.list, color: Colors.white, size: 40),
+                    Icon(Icons.people, color: Colors.white, size: 40),
                     SizedBox(height: 15),
                     Text(
-                      'Equipements',
+                      'Clients',
                       style: TextStyle(color: Colors.white),
                     ),
                   ],
@@ -245,10 +246,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.history, color: Colors.white, size: 40),
+                    Icon(Icons.pages, color: Colors.white, size: 40),
                     SizedBox(height: 15),
                     Text(
-                      'History',
+                      'Contrats',
                       style: TextStyle(color: Colors.white),
                     ),
                   ],
@@ -265,7 +266,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AlerteScreen(token: widget.token),
+                      builder: (context) =>
+                          AlerteCoordinatriceScreen(token: widget.token),
                     ),
                   );
                 },
@@ -320,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

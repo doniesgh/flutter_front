@@ -4,6 +4,8 @@ import 'package:todo/components/text_field.dart';
 import 'package:http/http.dart' as http;
 import 'package:todo/screens/auth/login_screen.dart';
 import 'package:todo/utils/toast.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -15,7 +17,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController emailController = TextEditingController();
 
   TextEditingController passwordController = TextEditingController();
-
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   Future<dynamic> _register() async {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       var regBody = {
@@ -24,7 +27,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       };
 
       var response = await http.post(
-        Uri.parse('http://172.30.64.1:2000/register'),
+        Uri.parse('$url:$port/register'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(regBody),
       );

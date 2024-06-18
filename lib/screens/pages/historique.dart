@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:todo/screens/tickets/ticketDetails.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HistoriqueScreen extends StatefulWidget {
   final String token;
@@ -20,14 +21,15 @@ class _HistoriqueScreenState extends State<HistoriqueScreen> {
     super.initState();
     fetchHistorique();
   }
-
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   Future<void> fetchHistorique() async {
     setState(() {
       isLoading = true;
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/ticketht/approved/all'),
+        Uri.parse('$url:$port/api/ticketht/approved/all'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },

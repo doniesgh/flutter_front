@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:jiffy/jiffy.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class NotificationScreen extends StatefulWidget {
   final String token;
@@ -21,14 +22,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
     super.initState();
     fetchAlertes();
   }
-
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   Future<void> fetchAlertes() async {
     setState(() {
       isLoading = true;
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/notification/get'),
+        Uri.parse('$url:$port/api/notification/get'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -58,7 +60,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Future<void> deleteAlert(String id) async {
     try {
       final response = await http.delete(
-        Uri.parse('http://172.30.64.1:2000/api/notification/delete/$id'),
+        Uri.parse('$url:$port/api/notification/delete/$id'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },

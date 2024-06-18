@@ -1,45 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:jiffy/jiffy.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class AlerteScreen extends StatefulWidget {
+class ListeClientScreen extends StatefulWidget {
   final String token;
 
-  AlerteScreen({required this.token});
+  ListeClientScreen({required this.token});
 
   @override
-  _AlerteScreenState createState() => _AlerteScreenState();
+  _ListeClientScreenScreenState createState() =>
+      _ListeClientScreenScreenState();
 }
 
-class _AlerteScreenState extends State<AlerteScreen> {
-  List<dynamic> alerts = [];
+class _ListeClientScreenScreenState extends State<ListeClientScreen> {
+  List<dynamic> clients = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchAlertes();
+    fetchClients();
   }
+
   final url = dotenv.env['URL'];
   final port = dotenv.env['PORT'];
-  Future<void> fetchAlertes() async {
+  Future<void> fetchClients() async {
     setState(() {
       isLoading = true;
     });
     try {
       final response = await http.get(
-        Uri.parse('$url:$port/api/alert/'),
-        headers: {
-          'Authorization': 'Bearer ${widget.token}',
-        },
+        Uri.parse('$url:$port/api/client/list'),
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         if (responseData != null) {
           setState(() {
-            alerts = responseData;
+            clients = responseData;
             isLoading = false;
           });
         } else {
@@ -61,7 +59,7 @@ class _AlerteScreenState extends State<AlerteScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Alertes',
+          'Clients',
           style: TextStyle(color: Colors.white, fontSize: 24),
         ),
         backgroundColor: Color.fromRGBO(209, 77, 90, 1),
@@ -69,33 +67,34 @@ class _AlerteScreenState extends State<AlerteScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
-            onPressed: fetchAlertes,
+            onPressed: fetchClients,
           ),
         ],
       ),
-      body: isLoading
+     body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : alerts.isEmpty
-              ? Center(child: Text('No alerts found'))
+          : clients.isEmpty
+              ? Center(child: Text('No clients found'))
               : RefreshIndicator(
-                  onRefresh: fetchAlertes,
+                  onRefresh: fetchClients, // Call fetchClients instead of fetchAlertes
                   child: ListView.builder(
-                    itemCount: alerts.length,
+                    itemCount: clients.length,
                     itemBuilder: (context, index) {
-                      final alert = alerts[index];
-                       final DateTime createdAt =
-                          DateTime.parse(alert['createdAt']);
-                      final String formattedDate =
-                          Jiffy(createdAt.toIso8601String()).yMMMMEEEEdjm;
-
+                      final client = clients[index]; // Fetch individual client
                       return Card(
                         child: ListTile(
-                          leading: Icon(
-                            Icons.warning,
-                            color: Colors.red,
+                          title: Text(client['client']), // Access client data fields
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Address: ${client['adresse']}'),
+                              Text('Email: ${client['email']}'),
+                              Text('Corporate: ${client['corporate']}'),
+                              Text('Office: ${client['office']}'),
+                              Text('Mobile: ${client['mobile']}'),
+                            ],
                           ),
-                          title: Text(alert['message']),
-                          subtitle: Text('Created At: $formattedDate'),
+                          
                         ),
                       );
                     },

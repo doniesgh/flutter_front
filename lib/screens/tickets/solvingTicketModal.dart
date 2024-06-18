@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SimpleHelloDialog extends StatelessWidget {
   final String ticketId;
   final TextEditingController solutionController = TextEditingController();
-
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   SimpleHelloDialog({Key? key, required this.ticketId}) : super(key: key);
-
   Future<void> handleSolved(BuildContext context) async {
     final confirmationResult = await showDialog<bool>(
       context: context,
@@ -58,7 +59,7 @@ class SimpleHelloDialog extends StatelessWidget {
       try {
         final solvingData = {'solution': solutionController.text};
         final response = await http.put(
-          Uri.parse('http://172.30.64.1:2000/api/ticket/solved/$ticketId'),
+          Uri.parse('$url:$port/api/ticket/solved/$ticketId'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode(solvingData),
         );

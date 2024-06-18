@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:todo/screens/tickets/ticketDetails.dart';
 
 class PhoneSolvedScreen extends StatefulWidget {
   final String token;
   final String? email;
+  
   const PhoneSolvedScreen({Key? key, required this.token, this.email})
       : super(key: key);
   @override
@@ -21,14 +23,15 @@ class _PhoneSolvedScreenState extends State<PhoneSolvedScreen> {
     super.initState();
     fetchAssignedTickets();
   }
-
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   Future<void> fetchAssignedTickets() async {
     setState(() {
       isLoading = true;
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/phone'),
+        Uri.parse('$url:$port/api/ticketht/assigned/phone'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },

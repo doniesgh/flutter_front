@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:todo/screens/tickets/solvingTicketModal.dart';
 import 'dart:convert';
-
 import 'package:todo/screens/tickets/ticketDetails.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FieldLoadingScreen extends StatefulWidget {
   final String token;
@@ -25,13 +26,16 @@ class _FieldLoadingScreenState extends State<FieldLoadingScreen> {
     fetchAssignedTickets();
   }
 
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
+
   Future<void> fetchAssignedTickets() async {
     setState(() {
       isLoading = true;
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/field'),
+        Uri.parse('$url:$port/api/ticketht/assigned/field'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -57,6 +61,15 @@ class _FieldLoadingScreenState extends State<FieldLoadingScreen> {
         isLoading = false;
       });
     }
+  }
+
+  void showSimpleHelloDialog(BuildContext context, String ticketId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleHelloDialog(ticketId: ticketId);
+      },
+    );
   }
 
   @override
@@ -110,10 +123,11 @@ class _FieldLoadingScreenState extends State<FieldLoadingScreen> {
                         ),
                         trailing: ElevatedButton(
                           onPressed: () {
-                            //handleAcceptTicket(tickets[index]['_id']);
+                            String ticketId = tickets[index]['_id'];
+                            showSimpleHelloDialog(context, ticketId);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 171, 4, 4),
+                            backgroundColor: Color.fromARGB(255, 35, 171, 4),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),

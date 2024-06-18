@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:todo/screens/pages/equipementDetails.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class EquipementScreen extends StatefulWidget {
   @override
@@ -17,11 +18,12 @@ class _EquipementScreenState extends State<EquipementScreen> {
     super.initState();
     fetchEquipements();
   }
-
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   Future<void> fetchEquipements() async {
     try {
       final response =
-          await http.get(Uri.parse('http://172.30.64.1:2000/api/equi/list'));
+          await http.get(Uri.parse('$url:$port/api/equi/list'));
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         if (responseData != null) {

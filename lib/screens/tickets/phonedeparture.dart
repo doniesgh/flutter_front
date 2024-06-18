@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:todo/screens/tickets/ticketDetails.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PhoneDepartureScreen extends StatefulWidget {
   final String token;
@@ -24,14 +24,15 @@ class _PhoneDepartureScreenState extends State<PhoneDepartureScreen> {
     super.initState();
     fetchAssignedTickets();
   }
-
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   Future<void> fetchAssignedTickets() async {
     setState(() {
       isLoading = true;
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/phone'),
+        Uri.parse('$url:$port/api/ticketht/assigned/phone'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },

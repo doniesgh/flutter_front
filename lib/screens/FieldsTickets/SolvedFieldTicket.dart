@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:todo/screens/tickets/ticketDetails.dart';
 
 class FieldSolvedScreen extends StatefulWidget {
@@ -31,7 +31,7 @@ class _FieldSolvedScreenState extends State<FieldSolvedScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('http://172.30.64.1:2000/api/ticketht/assigned/field'),
+        Uri.parse('$url:$port/api/ticketht/assigned/field'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -58,7 +58,8 @@ class _FieldSolvedScreenState extends State<FieldSolvedScreen> {
       });
     }
   }
-
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -4,16 +4,17 @@ import 'dart:convert';
 import 'package:jiffy/jiffy.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class AlerteScreen extends StatefulWidget {
+class AlerteCoordinatriceScreen extends StatefulWidget {
   final String token;
 
-  AlerteScreen({required this.token});
+  AlerteCoordinatriceScreen({required this.token});
 
   @override
-  _AlerteScreenState createState() => _AlerteScreenState();
+  _AlerteCoordinatriceScreenState createState() =>
+      _AlerteCoordinatriceScreenState();
 }
 
-class _AlerteScreenState extends State<AlerteScreen> {
+class _AlerteCoordinatriceScreenState extends State<AlerteCoordinatriceScreen> {
   List<dynamic> alerts = [];
   bool isLoading = true;
 
@@ -22,6 +23,7 @@ class _AlerteScreenState extends State<AlerteScreen> {
     super.initState();
     fetchAlertes();
   }
+
   final url = dotenv.env['URL'];
   final port = dotenv.env['PORT'];
   Future<void> fetchAlertes() async {
@@ -30,23 +32,21 @@ class _AlerteScreenState extends State<AlerteScreen> {
     });
     try {
       final response = await http.get(
-        Uri.parse('$url:$port/api/alert/'),
-        headers: {
-          'Authorization': 'Bearer ${widget.token}',
-        },
+        Uri.parse('$url:$port/api/alerts/get'),
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        if (responseData != null) {
+        if (responseData['alerts'] != null) {
+          // Check if 'alerts' key exists
           setState(() {
-            alerts = responseData;
+            alerts = responseData['alerts']; // Access 'alerts' array
             isLoading = false;
           });
         } else {
-          throw Exception('Response data is null');
+          throw Exception('No alerts found');
         }
       } else {
-        throw Exception('Failed to load alertes: ${response.statusCode}');
+        throw Exception('Failed to load alerts: ${response.statusCode}');
       }
     } catch (error) {
       print('Error fetching alerts: $error');
@@ -83,21 +83,34 @@ class _AlerteScreenState extends State<AlerteScreen> {
                     itemCount: alerts.length,
                     itemBuilder: (context, index) {
                       final alert = alerts[index];
-                       final DateTime createdAt =
+                      final DateTime createdAt =
                           DateTime.parse(alert['createdAt']);
                       final String formattedDate =
                           Jiffy(createdAt.toIso8601String()).yMMMMEEEEdjm;
 
                       return Card(
-                        child: ListTile(
-                          leading: Icon(
-                            Icons.warning,
-                            color: Colors.red,
-                          ),
-                          title: Text(alert['message']),
-                          subtitle: Text('Created At: $formattedDate'),
-                        ),
-                      );
+                          child: ListTile(
+                              leading: Icon(
+                                Icons.warning,
+                                color: Colors.red,
+                              ),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${alert['userId']['firstname']} ${alert['userId']['lastname']}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                      'Reference Ticket: ${alert['ticketId']['reference']}'),
+                                  Text(
+                                      'Localisation: ${alert['ticketId']['service_station']}'),
+                                  Text('Alert: ${alert['message']}'),
+                                  Text('Created At: $formattedDate'),
+                                ],
+                              )));
                     },
                   ),
                 ),

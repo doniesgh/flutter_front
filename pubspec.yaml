@@ -41,6 +41,7 @@ dependencies:
   open_file: ^3.0.2
   path_provider: ^2.0.2
   qr_code_scanner: ^1.0.1
+  flutter_dotenv: ^5.0.2
 dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_test:
@@ -54,6 +55,7 @@ flutter:
 
   assets:
     - assets/tu.png
+    - .env
 
   fonts:
     - family: Poppins
