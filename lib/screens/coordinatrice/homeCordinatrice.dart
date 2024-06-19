@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:todo/screens/FieldsTickets/FieldTickets.dart';
+import 'package:todo/screens/coordinatrice/FieldsTicketsCoordinatrice/FieldTickets.dart';
+import 'package:todo/screens/coordinatrice/phoneTicketsCoordinatrice/phoneTicket.dart';
 import 'package:todo/screens/auth/register_screen.dart';
 import 'package:todo/screens/coordinatrice/alerteCoordinatrice.dart';
 import 'package:todo/screens/coordinatrice/clientManagement.dart';
@@ -8,7 +9,6 @@ import 'package:todo/screens/pages/historique.dart';
 import 'package:todo/screens/pages/main_home.dart';
 import 'package:todo/screens/pages/notification.dart';
 import 'package:todo/screens/pages/profile.dart';
-import 'package:todo/screens/tickets/phoneTicket.dart';
 
 class HomeCordinatrice extends StatefulWidget {
   final String token;

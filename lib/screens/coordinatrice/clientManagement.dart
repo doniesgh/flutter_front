@@ -85,44 +85,11 @@ class _ClientmanagementScreenState extends State<Clientmanagement> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Coordinatrice',
+        title: const Text('Client Management',
             style: TextStyle(color: Colors.white, fontSize: 24)),
         backgroundColor: Color.fromRGBO(209, 77, 90, 1),
         toolbarHeight: 60,
       ),
-      drawer: Drawer(
-          child: ListView(
-        children: [
-          ListTile(
-            title: const Text('Phone Tickets'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => FieldTicket()),
-              );
-            },
-          ),
-          ListTile(
-              title: const Text('Field Tickets'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FieldTicket()),
-                );
-              }),
-          ListTile(
-            title: const Text('Logout'),
-            onTap: () async {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              await prefs.remove('token');
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => RegisterScreen()),
-              );
-            },
-          )
-        ],
-      )),
       body: Column(
         children: [
           const SizedBox(height: 160),
