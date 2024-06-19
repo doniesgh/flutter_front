@@ -25,7 +25,8 @@ class _PhoneLoadingScreenState extends State<PhoneLoadingScreen> {
     super.initState();
     fetchAssignedTickets();
   }
-final url = dotenv.env['URL'];
+
+  final url = dotenv.env['URL'];
   final port = dotenv.env['PORT'];
   Future<void> fetchAssignedTickets() async {
     setState(() {
@@ -65,7 +66,7 @@ final url = dotenv.env['URL'];
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return SimpleHelloDialog(ticketId: ticketId);
+        return Text("hello");
       },
     );
   }
@@ -80,7 +81,7 @@ final url = dotenv.env['URL'];
         ),
         backgroundColor: Color.fromRGBO(209, 77, 90, 1),
         toolbarHeight: 60,
-         actions: [
+        actions: [
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: fetchAssignedTickets,
@@ -103,7 +104,7 @@ final url = dotenv.env['URL'];
                       margin: EdgeInsets.all(10),
                       child: ListTile(
                         title: Text(tickets[index]['reference']),
-                         onTap: () {
+                        onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -112,13 +113,14 @@ final url = dotenv.env['URL'];
                             ),
                           );
                         },
- subtitle: Column(
+                        subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(tickets[index]['status']),
                             Text(tickets[index]['service_station']),
                           ],
-                        ),                        trailing: ElevatedButton(
+                        ),
+                        trailing: ElevatedButton(
                           onPressed: () {
                             String ticketId = tickets[index]['_id'];
                             showSimpleHelloDialog(context, ticketId);

@@ -10,7 +10,6 @@ import 'package:todo/screens/pages/notification.dart';
 import 'package:todo/screens/pages/profile.dart';
 import 'package:todo/screens/tickets/phoneTicket.dart';
 
-
 class HomeScreen extends StatefulWidget {
   final String token;
   final String email;
@@ -85,10 +84,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('Received token in HomeScreen: ${widget.token}');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home',
-            style: TextStyle(color: Colors.white, fontSize: 24)),
+            style: TextStyle(color: Color.fromARGB(255, 12, 8, 8), fontSize: 24)),
         backgroundColor: Color.fromRGBO(209, 77, 90, 1),
         toolbarHeight: 60,
       ),
@@ -167,7 +167,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => FieldTicketScreen(token : widget.token),
+                      builder: (context) =>
+                          FieldTicketScreen(token: widget.token),
                     ),
                   );
                 },

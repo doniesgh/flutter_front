@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:todo/screens/FieldsTickets/qrCodeScreenFin.dart';
 
 class SimpleHelloDialog extends StatelessWidget {
   final String ticketId;
+  final String token;
   final TextEditingController solutionController = TextEditingController();
   final url = dotenv.env['URL'];
   final port = dotenv.env['PORT'];
-  SimpleHelloDialog({Key? key, required this.ticketId}) : super(key: key);
+  SimpleHelloDialog({Key? key, required this.ticketId, required this.token})
+      : super(key: key);
   Future<void> handleSolved(BuildContext context) async {
     final confirmationResult = await showDialog<bool>(
       context: context,
@@ -25,7 +28,16 @@ class SimpleHelloDialog extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(true);
+                //  var widget;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => QrScannerScreenFin(
+                      ticketId: ticketId,
+                      token: token,
+                    ),
+                  ),
+                );
               },
               child: Text('Oui'),
             ),
@@ -96,6 +108,7 @@ class SimpleHelloDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+       print('Received token: ${widget.token}');
     return AlertDialog(
       title: Text('Solving Ticket'),
       content: Column(

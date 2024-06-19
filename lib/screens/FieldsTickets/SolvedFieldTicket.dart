@@ -25,6 +25,8 @@ class _FieldSolvedScreenState extends State<FieldSolvedScreen> {
     fetchAssignedTickets();
   }
 
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
   Future<void> fetchAssignedTickets() async {
     setState(() {
       isLoading = true;
@@ -58,10 +60,10 @@ class _FieldSolvedScreenState extends State<FieldSolvedScreen> {
       });
     }
   }
-  final url = dotenv.env['URL'];
-  final port = dotenv.env['PORT'];
+
   @override
   Widget build(BuildContext context) {
+    print('Received token in Solved Field Tickket: ${widget.token}');
     return Scaffold(
       appBar: AppBar(
         title: Text(

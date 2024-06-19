@@ -67,13 +67,17 @@ class _FieldLoadingScreenState extends State<FieldLoadingScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return SimpleHelloDialog(ticketId: ticketId);
+        return SimpleHelloDialog(
+          ticketId: ticketId,
+          token: '',
+        );
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    print('Received token: ${widget.token}');
     return Scaffold(
       appBar: AppBar(
         title: Text(
