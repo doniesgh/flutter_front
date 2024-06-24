@@ -63,13 +63,14 @@ class _FieldLoadingScreenState extends State<FieldLoadingScreen> {
     }
   }
 
-  void showSimpleHelloDialog(BuildContext context, String ticketId) {
+  void showSimpleHelloDialog(
+      BuildContext context, String ticketId, String token) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return SimpleHelloDialog(
           ticketId: ticketId,
-          token: '',
+          token: token,
         );
       },
     );
@@ -77,7 +78,7 @@ class _FieldLoadingScreenState extends State<FieldLoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('Received token: ${widget.token}');
+    print('Received token LOADING TICKET: ${widget.token}');
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -128,7 +129,10 @@ class _FieldLoadingScreenState extends State<FieldLoadingScreen> {
                         trailing: ElevatedButton(
                           onPressed: () {
                             String ticketId = tickets[index]['_id'];
-                            showSimpleHelloDialog(context, ticketId);
+                            String token = widget.token;
+                            print(
+                                "RECEIVED TOKEN SOLVED BUTTON :, ${widget.token}");
+                            showSimpleHelloDialog(context, ticketId, token);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 35, 171, 4),

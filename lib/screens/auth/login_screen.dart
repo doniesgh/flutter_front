@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo/components/text_field.dart';
+import 'package:todo/screens/Manager/homeManager.dart';
 import 'package:todo/screens/auth/register_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:todo/screens/coordinatrice/homeCordinatrice.dart';
@@ -65,6 +66,13 @@ class _LoginScreenState extends State<LoginScreen> {
               MaterialPageRoute(
                 builder: (context) =>
                     HomeCordinatrice(token: myToken, email: email),
+              ),
+            );
+          } else if (role == "MANAGER") {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeManager(token: myToken, email: email),
               ),
             );
           } else {

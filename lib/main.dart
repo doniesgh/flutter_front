@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo/screens/Manager/alerteManager.dart';
+import 'package:todo/screens/Manager/historiqueManager.dart';
+import 'package:todo/screens/Manager/homeManager.dart';
 import 'package:todo/screens/auth/register_screen.dart';
 import 'package:todo/screens/coordinatrice/homeCordinatrice.dart';
 import 'package:todo/screens/home_screen.dart';
+import 'package:todo/screens/pages/historique.dart';
 import 'package:todo/screens/tickets/phoneAssigned.dart';
 import 'package:todo/screens/tickets/phoneaccepted.dart';
 import 'package:todo/screens/tickets/phonearrived.dart';
 import 'package:todo/screens/tickets/phonedeparture.dart';
 import 'package:todo/screens/tickets/phoneloading.dart';
+// Ajout de l'import pour AlerteManager
 import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
@@ -38,6 +43,31 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isTokenExpired = token == null || JwtDecoder.isExpired(token!);
     bool isCoordinatrice = userRole == "COORDINATRICE";
+    bool isManager =
+        userRole == "MANAGER"; // Vérifiez si l'utilisateur est un MANAGER
+
+    // Définir les routes accessibles pour chaque rôle
+    final Map<String, WidgetBuilder> coordinatorRoutes = {
+      '/assignedphone': (context) => PhoneAssignedScreen(token: token!),
+      '/acceptedphone': (context) => PhoneAcceptedScreen(token: token!),
+      '/departurephone': (context) => PhoneDepartureScreen(token: token!),
+      '/arrivedphone': (context) => PhoneArrivedScreen(token: token!),
+      '/loadingphone': (context) => PhoneLoadingScreen(token: token!),
+    };
+
+    final Map<String, WidgetBuilder> managerRoutes = {
+      '/alertemanager': (context) => AlerteManagerScreen(token: token!),
+      '/historique': (context) => HistoriqueManagerScreen(token: token!),
+    };
+
+    // Sélectionner les routes en fonction du rôle
+    final Map<String, WidgetBuilder> appRoutes = {};
+    if (isCoordinatrice) {
+      appRoutes.addAll(coordinatorRoutes);
+    } else if (isManager) {
+      appRoutes.addAll(managerRoutes);
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Tunisys',
@@ -47,13 +77,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
-      routes: {
-        '/assignedphone': (context) => PhoneAssignedScreen(token: token!),
-        '/acceptedphone': (context) => PhoneAcceptedScreen(token: token!),
-        '/departurephone': (context) => PhoneDepartureScreen(token: token!),
-        '/arrivedphone': (context) => PhoneArrivedScreen(token: token!),
-        '/loadingphone': (context) => PhoneLoadingScreen(token: token!),
-      },
+      routes: appRoutes,
       home: isTokenExpired
           ? const RegisterScreen()
           : isCoordinatrice
@@ -61,10 +85,15 @@ class MyApp extends StatelessWidget {
                   token: token!,
                   email: email!,
                 )
-              : HomeScreen(
-                  token: token!,
-                  email: email!,
-                ),
+              : isManager
+                  ? HomeManager(
+                      token: token!,
+                      email: email!,
+                    )
+                  : HomeScreen(
+                      token: token!,
+                      email: email!,
+                    ),
     );
   }
 }

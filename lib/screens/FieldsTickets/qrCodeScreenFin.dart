@@ -1,11 +1,16 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:todo/screens/home_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class QrScannerScreenFin extends StatefulWidget {
   final String ticketId;
   final String token; // Ajoutez ce paramètre pour passer le token
+  final url = dotenv.env['URL'];
+  final port = dotenv.env['PORT'];
 
   QrScannerScreenFin({required this.ticketId, required this.token});
 
@@ -31,7 +36,6 @@ class _QrScannerScreenState extends State<QrScannerScreenFin> {
 
   @override
   Widget build(BuildContext context) {
-    print('Received token: ${widget.token}');
     return Scaffold(
       appBar: AppBar(
         title: Text('Scan QR Code'),
@@ -73,21 +77,58 @@ class _QrScannerScreenState extends State<QrScannerScreenFin> {
         result = scanData;
       });
       if (result != null) {
-        controller.pauseCamera(); // Arrête la caméra
+        controller.pauseCamera();
+        try {
+          final response = await http.put(
+            Uri.parse(
+                '${widget.url}:${widget.port}/api/ticket/solvedScan/${widget.ticketId}'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ${widget.token}'
+            },
+          );
 
-        // Log pour vérifier le token
-        print('Token: ${widget.token}');
+          if (response.statusCode != 200) {
+            throw Exception('Failed to mark ticket as solved');
+          }
 
-        // Naviguer vers l'écran principal en passant le token
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(
-              token: widget.token, // Utiliser le token passé au widget
-              email: '',
+          // Log pour vérifier le token
+          print('Token: ${widget.token}');
+
+          // Naviguer vers l'écran principal en passant le token
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(
+                token: widget.token, // Utiliser le token passé au widget
+                email: '',
+              ),
             ),
-          ),
-        );
+          );
+        } catch (error) {
+          print('Error: $error');
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Oops...'),
+                content: Text(error.toString()),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        } finally {
+          setState(() {
+            isProcessing = false;
+          });
+        }
       }
     });
   }
